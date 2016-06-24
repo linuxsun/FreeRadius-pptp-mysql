@@ -1,0 +1,10 @@
+ippool main_pool {
+        filename = ${db_dir}/db.ippool
+        range_start = 192.168.200.100
+        range_stop = 192.168.200.200
+        netmask = 255.255.255.0
+        cache_size = 800
+        ip_index = ${db_dir}/db.ipindex
+        override = no
+        maximum_timeout = 0
+}

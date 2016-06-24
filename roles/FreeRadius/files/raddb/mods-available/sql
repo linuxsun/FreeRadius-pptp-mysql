@@ -1,0 +1,29 @@
+sql {
+	driver = "rlm_sql_mysql"
+	dialect = "sqlite"
+	server = "localhost"
+	port = 3306
+	login = "radius"
+	password = "pass"
+	radius_db = "radius"
+	acct_table1 = "radacct"
+	acct_table2 = "radacct"
+	postauth_table = "radpostauth"
+	authcheck_table = "radcheck"
+	groupcheck_table = "radgroupcheck"
+	authreply_table = "radreply"
+	groupreply_table = "radgroupreply"
+	usergroup_table = "radusergroup"
+	delete_stale_sessions = yes
+	pool {
+		start = 5
+		min = 4
+		max = ${thread[pool].max_servers}
+		spare = 3
+		uses = 0
+		lifetime = 0
+		idle_timeout = 60
+	}
+	client_table = "nas"
+	$INCLUDE ${modconfdir}/${.:name}/main/${dialect}/queries.conf
+}

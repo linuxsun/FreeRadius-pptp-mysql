@@ -1,0 +1,30 @@
+- shell: which yum &>/dev/null && echo ok || echo no
+  register: YUM_COMMAND
+  tags:
+  - YUM-STATUS
+
+- name: INSTALL FreeRadius  For CentOS7
+  shell: rpm -q freeradius &>/dev/null || yum install -y freeradius radiusclient-ng* 
+  when:
+  - '"ok" in YUM_COMMAND.stdout'
+  
+- name: Copy Radius Config
+  copy: src=files/raddb dest=/etc owner=radiusd group=radiusd mode=0660
+  #with_items: CONFIG_FILE
+  tags:
+  - copy-radius-config
+
+- name: Copy radiusclient-ng
+  copy: src=files/radiusclient-ng dest=/etc
+  tags:
+  - copy-radius-cli
+
+- name: Copy dictionary.microsoft 
+  copy: src=files/dictionary/dictionary.microsoft dest=/usr/share/radiusclient-ng/
+  tags:
+  - copy-dic-mic
+
+- name: Copy dictionary
+  copy: src=files/dictionary/dictionary dest=/usr/share/radiusclient-ng/
+  tags:
+  - copy-dictionary

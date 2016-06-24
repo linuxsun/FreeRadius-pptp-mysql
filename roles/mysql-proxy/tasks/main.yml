@@ -1,0 +1,14 @@
+- shell: which yum &>/dev/null && echo ok || echo no
+  register: YUM_COMMAND
+  tags:
+  - YUM-STATUS
+ 
+- name: INSTALL mysql-proxy For CentOS7
+  shell: rpm -q mysql-proxy &>/dev/null || yum install -y mysql-proxy mysql-proxy-devel
+  when:
+  - '"ok" in YUM_COMMAND.stdout'
+
+- name: Copy mysql-proxy.sh shell
+  copy: src=files/mysql-proxy.sh dest=/usr/local/bin mode=0750
+  tags:
+  - install-mysql-proxy

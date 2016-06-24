@@ -1,0 +1,2 @@
+- name: start mysql-proxy For CentOS7
+  shell: /usr/local/bin/mysql-proxy.sh >/dev/null&

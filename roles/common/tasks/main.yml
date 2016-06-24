@@ -1,0 +1,64 @@
+- shell: which yum &>/dev/null && echo ok || echo no
+  register: YUM_COMMAND
+  tags:
+  - system-base-init
+
+- shell: which pacman &>/dev/null && echo ok || echo no
+  register: PACMAN_COMMAND
+  tags:
+  - system-base-init
+
+- shell: which apt-get &>/dev/null && echo ok || echo no
+  register: APTGET_COMMAND
+  tags:
+  - system-base-init
+  
+- shell: grep "pool.ntp.org" /var/spool/cron/root /etc/crontab &>/dev/null && echo ok || echo no
+  register: CRON_STATUS
+  tags:
+    - CronStatus
+
+- name: 更改时区 to any
+  shell: ls /etc/localtime -lh |grep Shanghai &>/dev/null && echo ok || ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+  tags:
+  - system-localtime
+
+- name: 时间同步 Centos & RHEL & Fedora
+  shell: which ntpdate &>/dev/null && echo ok || yum install ntpdate -y
+  with_items: PACKAGES_FOR_CENTOS
+  when:
+  - '"ok" in YUM_COMMAND.stdout'
+  tags:
+  - system-base-init
+  - RHEL-ntpd
+
+- name: 时间同步 for Arch Linux
+  shell: which openntpd &>/dev/null&& echo ok || pacman -S openntpd
+  when:
+  - '"ok" in PACMAN_COMMAND.stdout'
+  tags:
+  - arch-ntpd
+
+- name: 时间同步 for Ubuntu
+  shell: which ntpdate &>/dev/null && echo ok || apt-get install ntpdate -y
+  when: 
+  - '"ok" in APTGET_COMMAND.stdout'
+
+- name: 定期时间同步
+  cron: name="ntpdate" minute="58" hour="23" job="ntpdate cn.pool.ntp.org"
+  when:
+  - '"no" in CRON_STATUS.stdout'
+
+- name: 安装 iostat 监控磁盘时要用到
+  shell: which iostat &>/dev/null && echo ok || echo no ; yum install sysstat -y
+  register: IOSTAT_STATUS
+  when:
+  - '"ok" in YUM_COMMAND.stdout'
+
+- name: 禁用Selinux For RHEL
+  shell: grep 'SELINUX=enforcing' /etc/selinux/config &> /dev/null && sed -i 's/SELINUX=enforcing/SELINUX=permissive/g' /etc/selinux/config && setenforce 0 || echo ok
+  when:
+  - '"ok" in YUM_COMMAND.stdout'
+  tags:
+  - system-base-init
+  - RHEL-selinux

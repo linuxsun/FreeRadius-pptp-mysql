@@ -1,0 +1,19 @@
+- shell: which yum &>/dev/null && echo ok || echo no
+  register: YUM_COMMAND
+  tags:
+  - YUM-STATUS
+ 
+- name: INSTALL pptpd For CentOS7
+  shell: rpm -q pptpd &>/dev/null || yum install -y pptpd ppp
+  when:
+  - '"ok" in YUM_COMMAND.stdout'
+
+- name: Copy ppp Config
+  copy: src=files/ppp/options.pptpd dest=/etc/ppp/options.pptpd
+  tags:
+  - copy-ppp-config
+  
+- name: Copy pptpd.conf Config
+  copy: src=files/pptpd.conf dest=/etc/pptpd.conf
+  tags:
+  - copy-pptpd-config

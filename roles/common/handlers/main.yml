@@ -1,0 +1,5 @@
+- name: restart ntp for RHEL
+  service: name=ntpd state=restarted
+
+- name: restart openntpd for Arch Linux
+  service: name=openntpd state=restarted

@@ -1,0 +1,2 @@
+- name: Restart PPTPD For CentOS7
+  service: name=pptpd.service state=restarted
