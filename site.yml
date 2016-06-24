@@ -1,0 +1,11 @@
+- name: Apps System Init
+  hosts: vpn
+  roles:
+#    - common
+- name: vpn base init
+  hosts: vpn
+  roles:
+    - FreeRadius
+    - pptpd
+    - mysql-proxy
+#    - OpenVpn

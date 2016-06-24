@@ -1,1 +1,2 @@
-# FreeRadius-pptp-mysql
+Usage:
+  ansible-playbook -i hosts site.yml
